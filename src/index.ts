@@ -13,17 +13,17 @@ app.get( "/", ( req: any, res:any ) => {
     res.json({message:"This is the index page !"});
 } );
 
-cron.schedule('14 15 * * *', ():any => {
+cron.schedule('45 23 * * *', ():any => {
     const dbName: string = process.env.DB_NAME;
     const dbPath: string = process.env.DB_PATH;
     const datestamps: string = moment().subtract(10, 'days').calendar();
-    const sqlFileName: string = dbPath+datestamps.replace("/", "-")+"_sswl_caf_db_backup.sql";
+    const sqlFileName: string = dbPath+datestamps.replace(/\//g, "_")+"_sswl_caf_db_backup.sql";
     if (shell.exec(`mysqldump ${dbName} > ${sqlFileName}`).code !== 0) {
-        shell.echo("database backup cron job failed!");
+        shell.echo(`database backup cron job failed for : ${datestamps}`);
         shell.exit(1);
       }
       else {
-        shell.echo('Database backup complete');
+        shell.echo(`Database backup complete for : ${datestamps}`);
       }
 });
 
